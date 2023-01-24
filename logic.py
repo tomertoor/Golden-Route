@@ -1,5 +1,5 @@
 
-SHIMSHON_ENGINE_FORCE = 1000000 # in nuetons
+SHIMSHON_ENGINE_FORCE = 100000 # in nuetons
 SHIMSHON_TAKEOFF_VELOCITY = 140 # in m per second
 
 MAX_TAKEOFF_TIME = 60
@@ -44,25 +44,24 @@ def calculate_takeoff_distance(acceleration, time, start_pos=0, start_velocity=0
     Args:
         acceleration (int): the acceleration of the plane
         time (int): the it will take for the plane to takeoff
+    Returns: float: the takeoff distance
     """
     return (0.5 * acceleration *  pow(time, 2)) + (start_velocity * time) + start_pos
 
 def calculate_takeoff_stats(mass):
     acceleration = calculate_acceleration(SHIMSHON_ENGINE_FORCE, mass)
     time = calculate_takeoff_time(acceleration, SHIMSHON_TAKEOFF_VELOCITY)
-    
+    takeoff_distance = calculate_takeoff_distance(acceleration, time)
+
     overweight_mass = 0
     
-
-
     while time > MAX_TAKEOFF_TIME:
         mass -= 1
         overweight_mass += 1
         acceleration = calculate_acceleration(SHIMSHON_ENGINE_FORCE, mass)
         time = calculate_takeoff_time(acceleration, SHIMSHON_TAKEOFF_VELOCITY)
-
-
-    takeoff_distance = calculate_takeoff_distance(acceleration, time)
     
-
-
+    result = [takeoff_distance, time]
+    result.append(overweight_mass) if overweight_mass > 0 else None
+    
+    return result
