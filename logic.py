@@ -4,6 +4,10 @@ SHIMSHON_TAKEOFF_VELOCITY = 140 # in m per second
 
 MAX_TAKEOFF_TIME = 60
 
+TAKEOFF_DISTANCE_CELL = 0
+TAKEOFF_TIME_CELL = 1
+OVERWEIGHT_MASS_CELL = 2
+
 def calculate_acceleration(force, mass):
     """Calculates acceleration by force and mass
 
