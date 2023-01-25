@@ -57,7 +57,10 @@ def calculate_takeoff_stats(mass):
     time = calculate_takeoff_time(acceleration, SHIMSHON_TAKEOFF_VELOCITY)
     takeoff_distance = calculate_takeoff_distance(acceleration, time)
 
+    result = [takeoff_distance, time] #here so it the overweight wont change the result and will just display the overweight
+
     overweight_mass = 0
+    
     
     while time > MAX_TAKEOFF_TIME:
         mass -= 1
@@ -65,7 +68,6 @@ def calculate_takeoff_stats(mass):
         acceleration = calculate_acceleration(SHIMSHON_ENGINE_FORCE, mass)
         time = calculate_takeoff_time(acceleration, SHIMSHON_TAKEOFF_VELOCITY)
     
-    result = [takeoff_distance, time]
     result.append(overweight_mass) if overweight_mass > 0 else None
     
     return result
