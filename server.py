@@ -1,25 +1,51 @@
 import logic
 from flask import *
-import json
+from json import *
+from pymongo import MongoClient
 
 app = Flask(__name__)
 
+MONGO_URI = r"mongodb://localhost:27017/"
+TAKEOFF_STATS_DB = "takeoff_stats"
+STATS_COLLECTION = "stats"
 
+client = MongoClient(MONGO_URI)
 
 @app.route("/getTakeoffStats")
 def get_takeoff_stats():
+    """Flask GET response that processes the user sending the mass and returns data. Saves it in the mongodb aswell
+    Args:
+        In the HTTP request it sends mass. (int)
+    Returns:
+        HTTP GET Response JSON of the takeoff stats
+    """
+
     mass = request.args.get('mass')
-    result = logic.calculate_takeoff_stats(int(mass))
-    result_json = {"takeoff_distance": result[logic.TAKEOFF_DISTANCE_CELL], "takeoff_time": result[logic.TAKEOFF_TIME_CELL]}
-    
-    result_json["overweight_mass"] = result[logic.OVERWEIGHT_MASS_CELL] if len(result) > 2 else None
-    return json.dumps(result_json)
+    takeoff_stats = logic.calculate_takeoff_stats(int(mass))
+    result = {"takeoff_distance": takeoff_stats[logic.TAKEOFF_DISTANCE_CELL], "takeoff_time": takeoff_stats[logic.TAKEOFF_TIME_CELL]}
+
+    result.update({"overweight_mass": takeoff_stats[logic.OVERWEIGHT_MASS_CELL]}) if len(takeoff_stats) > 2 else None
+
+    json_result = dumps(result)
+    save_stats(mass, result)
+    return json_result
      
 
+def save_stats(mass, takeoff_stats):
+    """Helper function that recieves data and saves it to the stats collection
+    Args:
+        mass (float): the mass to save
+        takeoff_stats (dict): the takeoff stats to save in the db
+    Returns:
+        None
+    """
+    db = client[TAKEOFF_STATS_DB]
+    collection = db[STATS_COLLECTION]
+    
+    takeoff_stats["mass"] = mass
+    
+    collection.insert_one(takeoff_stats)
 
-@app.route("/")
-def index():
-    return 'Test'
 
 if __name__ == '__main__':
     app.run("0.0.0.0", 8080, debug=True)
