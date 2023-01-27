@@ -20,8 +20,17 @@ def get_takeoff_stats():
         HTTP GET Response JSON of the takeoff stats
     """
 
+    
     mass = request.args.get('mass')
-    takeoff_stats = logic.calculate_takeoff_stats(int(mass))
+    try:
+        mass = int(mass)
+    except:
+        return "Error, wrong input type!"
+    try:
+        takeoff_stats = logic.calculate_takeoff_stats(int(mass))
+    except:
+        return "Error, unexpected input"
+
     result = {"takeoff_distance": takeoff_stats[logic.TAKEOFF_DISTANCE_CELL], "takeoff_time": takeoff_stats[logic.TAKEOFF_TIME_CELL]}
 
     result.update({"overweight_mass": takeoff_stats[logic.OVERWEIGHT_MASS_CELL]}) if len(takeoff_stats) > 2 else None
