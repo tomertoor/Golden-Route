@@ -1,7 +1,9 @@
-import logic
+import logic as logic
 from flask import *
+from flask_cors import cross_origin
 from json import *
 from pymongo import MongoClient
+import requests
 
 app = Flask(__name__)
 
@@ -12,6 +14,7 @@ STATS_COLLECTION = "stats"
 client = MongoClient(MONGO_URI)
 
 @app.route("/getTakeoffStats")
+@cross_origin()
 def get_takeoff_stats():
     """Flask GET response that processes the user sending the mass and returns data. Saves it in the mongodb aswell
     Args:
@@ -25,11 +28,11 @@ def get_takeoff_stats():
     try:
         mass = int(mass)
     except:
-        return "Error, wrong input type!"
+        return "Error, wrong input type!", 504
     try:
         takeoff_stats = logic.calculate_takeoff_stats(int(mass))
     except:
-        return "Error, unexpected input"
+        return "Error, unexpected input", 504
 
     result = {"takeoff_distance": takeoff_stats[logic.TAKEOFF_DISTANCE_CELL], "takeoff_time": takeoff_stats[logic.TAKEOFF_TIME_CELL]}
 
@@ -55,6 +58,9 @@ def save_stats(mass, takeoff_stats):
     
     collection.insert_one(takeoff_stats)
 
+
+def check_date_location(date, location):
+    
 
 if __name__ == '__main__':
     app.run("0.0.0.0", 8080, debug=True)
