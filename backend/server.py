@@ -5,6 +5,11 @@ from json import *
 from pymongo import MongoClient
 import requests
 
+WEATHER_API = "https://archive-api.open-meteo.com/v1/archive"
+
+MIN_TAKEOFF_TEMP = 15
+MAX_TAKEOFF_TEMP = 30
+
 app = Flask(__name__)
 
 MONGO_URI = r"mongodb://localhost:27017/"
@@ -58,9 +63,38 @@ def save_stats(mass, takeoff_stats):
     
     collection.insert_one(takeoff_stats)
 
-
-def check_date_location(date, location):
+@app.route("/checkTakeoffTime")
+def check_takeoff_time():
+    date = request.args.get("date")
+    location = {"longitude": 35, "latitude": 30} # default values that are written in the instructions
+    timezone = request.args.get("timezone")
     
+    return check_date_location(location, timezone, date)
+
+def check_date_location(location, timezone, date="2023-1-1"):
+    temperature_list = get_weather_temp(date, location["longitude"], location["latitude"], timezone)
+    result = {}
+    for hour, temp in enumerate(temperature_list):
+        if MAX_TAKEOFF_TEMP > temp > MIN_TAKEOFF_TEMP:
+            result[hour] = True
+        else:
+            result[hour] = False
+    return result
+
+def get_weather_temp(date, longtitude, latitude, timezone="auto"):
+    """Perform a rest api request to the open meteo api and returns a list of the temperature at each hour
+
+    Args:
+        date (string): the date
+        longtitude (float): longtitude
+        latitude (float): latitude
+        timezone (str, optional): the timezone. Defaults to "auto".
+    Returns: 
+        temperatures of each hour in the day
+    """
+    response = requests.get(WEATHER_API, params={'longitude': longtitude, 'latitude': latitude, 'hourly': "temperature_2m", 'timezone': timezone, 'start_date': date, 'end_date': date})    
+    data = response.json()
+    return data["hourly"]["temperature_2m"]
 
 if __name__ == '__main__':
     app.run("0.0.0.0", 8080, debug=True)
