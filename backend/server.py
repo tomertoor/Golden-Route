@@ -2,7 +2,9 @@ import logic as logic
 from flask import *
 from flask_cors import cross_origin
 from json import *
-from pymongo import MongoClient
+
+import db_handler
+
 import requests
 
 WEATHER_API = "https://archive-api.open-meteo.com/v1/archive"
@@ -12,11 +14,10 @@ MAX_TAKEOFF_TEMP = 30
 
 app = Flask(__name__)
 
-MONGO_URI = r"mongodb://localhost:27017/"
 TAKEOFF_STATS_DB = "takeoff_stats"
 STATS_COLLECTION = "stats"
 
-client = MongoClient(MONGO_URI)
+
 
 @app.route("/getTakeoffStats")
 @cross_origin()
@@ -39,29 +40,13 @@ def get_takeoff_stats():
     except:
         return "Error, unexpected input", 504
 
-    result = {"takeoff_distance": takeoff_stats[logic.TAKEOFF_DISTANCE_CELL], "takeoff_time": takeoff_stats[logic.TAKEOFF_TIME_CELL]}
+    result = [takeoff_stats[logic.TAKEOFF_DISTANCE_CELL], takeoff_stats[logic.TAKEOFF_TIME_CELL]]
 
-    result.update({"overweight_mass": takeoff_stats[logic.OVERWEIGHT_MASS_CELL]}) if len(takeoff_stats) > 2 else None
-
+    
     json_result = dumps(result)
-    save_stats(mass, result)
+    db_handler.save_stats(mass, takeoff_stats[logic.TAKEOFF_DISTANCE_CELL], takeoff_stats[logic.TAKEOFF_TIME_CELL], )
     return json_result
-     
 
-def save_stats(mass, takeoff_stats):
-    """Helper function that recieves data and saves it to the stats collection
-    Args:
-        mass (float): the mass to save
-        takeoff_stats (dict): the takeoff stats to save in the db
-    Returns:
-        None
-    """
-    db = client[TAKEOFF_STATS_DB]
-    collection = db[STATS_COLLECTION]
-    
-    takeoff_stats["mass"] = mass
-    
-    collection.insert_one(takeoff_stats)
 
 @app.route("/checkTakeoffTime")
 @cross_origin()
@@ -100,5 +85,9 @@ def get_weather_temp(date, longtitude, latitude, timezone="auto"):
     print(data)
     return data["hourly"]["temperature_2m"]
 
-if __name__ == '__main__':
+def main():
+    db_handler.create_db()
     app.run("0.0.0.0", 8080, debug=True)
+
+if __name__ == '__main__':
+    main()
