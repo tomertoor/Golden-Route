@@ -64,12 +64,15 @@ def save_stats(mass, takeoff_stats):
     collection.insert_one(takeoff_stats)
 
 @app.route("/checkTakeoffTime")
+@cross_origin()
 def check_takeoff_time():
     date = request.args.get("date")
     location = {"longitude": 35, "latitude": 30} # default values that are written in the instructions
     timezone = request.args.get("timezone")
     
     return check_date_location(location, timezone, date)
+
+
 
 def check_date_location(location, timezone, date="2023-1-1"):
     temperature_list = get_weather_temp(date, location["longitude"], location["latitude"], timezone)
@@ -94,6 +97,7 @@ def get_weather_temp(date, longtitude, latitude, timezone="auto"):
     """
     response = requests.get(WEATHER_API, params={'longitude': longtitude, 'latitude': latitude, 'hourly': "temperature_2m", 'timezone': timezone, 'start_date': date, 'end_date': date})    
     data = response.json()
+    print(data)
     return data["hourly"]["temperature_2m"]
 
 if __name__ == '__main__':
