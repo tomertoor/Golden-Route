@@ -2,7 +2,7 @@ import sqlite3
 
 
 try:
-    connection = sqlite3.connect("./goldenroute.db")
+    connection = sqlite3.connect("./goldenroute.db", check_same_thread=False)
     cur = connection.cursor()
 except:
     print("SQL isn't working")

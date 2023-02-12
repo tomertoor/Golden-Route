@@ -29,9 +29,10 @@ function App() {
     const response = await axios.get(BACKEND_URL + "/getTakeoffStats?mass=" + aircraftMass);
     const { status, data } = response
     if (status === OK_CODE) {
+      console.log(data)
       setTakeoffDistance(data["takeoff_distance"]);
       setTakeoffTime(data["takeoff_time"]);
-      if ("overweight_mass" in data) {
+      if (data["overweight_mass"] != null) {
         setTakeoffOverweightMass(data["overweight_mass"]);
       }
       else {

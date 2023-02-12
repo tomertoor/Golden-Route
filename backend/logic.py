@@ -68,6 +68,6 @@ def calculate_takeoff_stats(mass):
         acceleration = calculate_acceleration(SHIMSHON_ENGINE_FORCE, mass)
         time = calculate_takeoff_time(acceleration, SHIMSHON_TAKEOFF_VELOCITY)
     
-    result.append(overweight_mass) if overweight_mass > 0 else None
+    result.append(overweight_mass if overweight_mass > 0 else None) 
     
     return result
