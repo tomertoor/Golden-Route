@@ -32,7 +32,7 @@ def get_takeoff_stats():
     except:
         return "Error, wrong input type!", 504
     try:
-        takeoff_stats = logic.calculate_takeoff_stats(int(mass))
+        takeoff_stats = logic.calculate_takeoff_stats(int(mass)) # For runtime efficiency, I didn't try to query the db to check for similar times as it is easier to calculate it in this function
     except:
         return "Error, unexpected input", 504
 
@@ -48,6 +48,11 @@ def get_takeoff_stats():
 @app.route("/checkTakeoffTime")
 @cross_origin()
 def check_takeoff_time():
+    """Flask handler for checktakeoff time
+
+    Returns:
+        List: list represnting the hours which you can takeoff at
+    """
     date = request.args.get("date")
     location = {"longitude": 35, "latitude": 30} # default values that are written in the instructions
     timezone = request.args.get("timezone")
@@ -55,11 +60,6 @@ def check_takeoff_time():
 
 
 
-
-
-def main():
+def start():
     db_handler.create_db()
-    app.run("0.0.0.0", 8080, debug=True)
-
-if __name__ == '__main__':
-    main()
+    return app

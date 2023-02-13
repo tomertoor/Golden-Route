@@ -1,82 +1,29 @@
-import './App.css';
+import "./App.css";
 
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { useEffect } from "react";
 
-import axios from 'axios';
-import { useState } from 'react';
-import "./CheckTime";
-import TimeComponent from './CheckTime';
-
-const BACKEND_URL = "http://127.0.0.1:8080"
-
-const OK_CODE = 200
-const ERROR_CODE = 504
-
+import TakeoffComponent from "./TakeoffComponent";
+import TimeComponent from "./CheckTime";
 
 
 
 function App() {
+  //Sets the title
+  useEffect(() => 
+  {
+    document.title = "Golden route submission"
+  }, []);
 
-  const [takeoffTime, setTakeoffTime] = useState("");
-  const [takeoffDistance, setTakeoffDistance] = useState("");
-  const [takeoffOverweightMass, setTakeoffOverweightMass] = useState("");
-  const [aircraftMass, setAircraftMass] = useState("");
 
-
-
-  const handleGenerate = async (event) => {
-    const response = await axios.get(BACKEND_URL + "/getTakeoffStats?mass=" + aircraftMass);
-    const { status, data } = response
-    if (status === OK_CODE) {
-      console.log(data)
-      setTakeoffDistance(data["takeoff_distance"]);
-      setTakeoffTime(data["takeoff_time"]);
-      if (data["overweight_mass"] != null) {
-        setTakeoffOverweightMass(data["overweight_mass"]);
-      }
-      else {
-        setTakeoffOverweightMass("Not required");
-      }
-    }
-    else {
-      setTakeoffDistance(data);
-      setTakeoffOverweightMass(data);
-      setTakeoffTime(data);
-    }
-  }
-  const handleInput = (event) => {
-    const value = event.target.value;
-    if (!/^\d+$/.test(value)) {
-      return;
-    }
-    setAircraftMass(value);
-  }
   return (
     <>
-      <div className='outer-div'>
-        <h1 className='upload-title'>Takeoff stats for C130 (Shimshon)</h1>
-
-        <TextField label="Aircraft Mass" value={aircraftMass} onInput={handleInput} error={false} variant="outlined" />
-
-
-
-        <Button sx={{ color: 'rgb(19, 23, 32)', marginTop: '1.2rem' }} variant="outlined" onClick={handleGenerate} >Generate</Button>
-
-
-
-        <div className='results'>
-          <TextField className='upload-' disabled={true} label="Takeoff distance" value={takeoffDistance} error={false} variant="outlined" />
-          <TextField className='upload-' disabled={true} label="Takeoff Time" value={takeoffTime} variant="outlined" />
-          <TextField className='upload-' disabled={true} label="Overweight mass" value={takeoffOverweightMass} variant="outlined" />
-
-        </div>
-
+      <div className="outer-div">
+        <TakeoffComponent></TakeoffComponent>
       </div>
-      <div className='outer-div'>
+
+      <div className="outer-div">
         <TimeComponent></TimeComponent>
       </div>
-      
     </>
   );
 }

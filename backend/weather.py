@@ -11,14 +11,25 @@ WEEK_TIME = 7
 
 
 def check_date_location(location, timezone, date="2023-1-1"):
+    """Handles checking if at a specfic date and location viable it what hours for takeoff
+
+    Args:
+        location (dict): Dictionary representing the location
+        timezone (str): The timezone of the area to fetch from (for some reason it is relevant for the api)
+        date (str, optional): the date to get the weather for. Defaults to "2023-1-1".
+
+    Returns:
+        list: List that each index represents an hour and if it is possible to takeoff at that hour
+    """
     temperature_list = get_weather_temp(date, location["longitude"], location["latitude"], timezone)
+    
     result = []
     for temp in temperature_list:
         if MAX_TAKEOFF_TEMP > temp > MIN_TAKEOFF_TEMP:
             result.append(True)
         else:
             result.append(False)
-    print(result)
+            
     return result
 
 def get_weather_temp(date, longtitude, latitude, timezone="auto"):

@@ -1,4 +1,4 @@
-import react, { useState } from "react";
+import { useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
@@ -20,9 +20,8 @@ const OK_CODE = 200;
 
 const BACKEND_URL = "http://127.0.0.1:8080";
 
-function Results({hours}) {
+function ResultsComponent({hours}) {
     let hour = 0;
-
 
   return (
     <>
@@ -32,6 +31,7 @@ function Results({hours}) {
         sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
       >
         {
+          //Goes over the hours list and for each values creates a listitem with a checkbox based on the list items
           hours.map((value) => {
           hour++;
           const labelId = `checkbox-list-secondary-label-${hour}`;
@@ -65,12 +65,14 @@ function TimeComponent() {
   const [hours, setHours] = useState([]);
 
 
+  /**
+   * Click handler which performs the api request and updates the state of the hour list
+   */
   const handleCheck = async () => {
     const response = await axios.get(BACKEND_URL + "/checkTakeoffTime", {
       params: { date: date.format("YYYY-MM-DD") },
     });
     const { status, data } = response;
-    console.log(data);
     if (status === OK_CODE) {
         setChecked(true)
         setHours(data)
@@ -97,7 +99,7 @@ function TimeComponent() {
       >
         Check
       </Button>
-      {hasChecked ? <Results hours={hours}/>
+      {hasChecked ? <ResultsComponent hours={hours}/>
       : null}
       
     </>

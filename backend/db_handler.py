@@ -28,7 +28,15 @@ def flush_db():
         pass
 
 def save_stats(aircraft_mass, takeoff_distance, takeoff_time, excessive_weight=None):
-    
+    """Handles saving the stats of a takeoff, if this mass exists, it won't save anything
+    Args:
+        aircraft_mass (float): the mass of the plane
+        takeoff_distance (float): the takeoff distance
+        takeoff_time (float): the takeoff time of the plane
+        excessive_weight (None ,float): the excessive weight to save, Defaults to=None
+    Returns:
+        None 
+    """
     try:
         
         cur.execute("""INSERT INTO stats (aircraft_mass, takeoff_distance, takeoff_time, excessive_weight) VALUES (?,?,?,?);""", (aircraft_mass, takeoff_distance, takeoff_time, excessive_weight))
