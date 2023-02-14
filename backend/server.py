@@ -8,6 +8,8 @@ import db_handler
 
 import weather
 
+db_handler.create_db()
+
 app = Flask(__name__)
 
 TAKEOFF_STATS_DB = "takeoff_stats"
@@ -59,7 +61,3 @@ def check_takeoff_time():
     return weather.check_date_location(location, timezone, date)
 
 
-
-def start():
-    db_handler.create_db()
-    return app
