@@ -3,7 +3,7 @@
 
 ## Question 5
 
-Edge cases that can pop when using the system is when the mess of the aircraft is 0, it would cause a division by zero and throw an exception.
+Edge cases that can pop when using the system is when the mess of the aircraft is 0, it would cause a division by zero and throw an exception, aswell if an input of another type is sent, we can validate that it doesn't impact the system by using try-catch blocks.
 
 ## Question 6
 To make the physical formula more accurate it should take into account:
